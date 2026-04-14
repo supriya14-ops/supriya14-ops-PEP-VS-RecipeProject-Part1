@@ -255,6 +255,7 @@ public class IngredientDAO {
      * @param pageOptions options for pagination and sorting.
      * @return a Page of Ingredient objects containing the paginated results.
      * @throws SQLException if an error occurs while accessing the ResultSet.
+     * 
      */
     private Page<Ingredient> pageResults(ResultSet resultSet, PageOptions pageOptions) throws SQLException {
         List<Ingredient> ingredients = mapRows(resultSet);
