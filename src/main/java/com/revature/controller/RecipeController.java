@@ -9,6 +9,7 @@ import java.util.List;
 import com.revature.model.Recipe;
 import com.revature.service.AuthenticationService;
 import com.revature.service.RecipeService;
+import com.revature.util.Page;
 
 /**
  * The RecipeController class provides RESTful endpoints for managing recipes.
@@ -43,15 +44,16 @@ public class RecipeController {
      * Responds with a 200 OK status and the list of recipes, or 404 Not Found with a result of "No recipes found".
      */
     public Handler fetchAllRecipes = ctx -> {
-        Integer page = getParamAsClassOrElse(ctx, "page", Integer.class, null);
-        Integer size = getParamAsClassOrElse(ctx, "size", Integer.class, null);
-        String sort = getParamAsClassOrElse(ctx, "sort", String.class, null);
-        String filter = getParamAsClassOrElse(ctx, "filter", String.class, null);
+        Integer page = getParamAsClassOrElse(ctx, "page", Integer.class, 1);
+        Integer pageSize = getParamAsClassOrElse(ctx, "pageSize", Integer.class, 10);
+        String sortBy = getParamAsClassOrElse(ctx, "sortBy", String.class, "id");
+        String sortDir = getParamAsClassOrElse(ctx, "sortDirection", String.class, "asc");
+        String term = getParamAsClassOrElse(ctx, "term", String.class, null);
 
-        List<Recipe> recipes = recipeService.getRecipes(page, size, sort, filter);
+        Page<Recipe> recipePage = recipeService.searchRecipes(term, page, pageSize, sortBy, sortDir);
 
-        if (recipes != null && !recipes.isEmpty()) {
-            ctx.json(recipes);
+        if (recipePage != null && !recipePage.getItems().isEmpty()) {
+            ctx.json(recipePage);
             ctx.status(200);
         } else {
             ctx.status(404);

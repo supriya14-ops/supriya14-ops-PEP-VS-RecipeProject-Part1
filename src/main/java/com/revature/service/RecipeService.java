@@ -56,7 +56,14 @@ public class RecipeService {
         int generatedId = recipeDAO.createRecipe(recipe);
         recipe.setId(generatedId);
     } else {
-        recipeDAO.updateRecipe(recipe);
+        // Check if recipe exists; if not, create it
+        Recipe existing = recipeDAO.getRecipeById(recipe.getId());
+        if (existing == null) {
+            int generatedId = recipeDAO.createRecipe(recipe);
+            recipe.setId(generatedId);
+        } else {
+            recipeDAO.updateRecipe(recipe);
+        }
     }
 }
     

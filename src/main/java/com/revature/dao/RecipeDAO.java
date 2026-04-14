@@ -62,10 +62,11 @@ public class RecipeDAO {
          try {
         var conn = connectionUtil.getConnection();
         String sql = "SELECT * FROM RECIPE ORDER BY id";
-        var ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
+        var stmt = conn.createStatement();
 
+        ResultSet rs = stmt.executeQuery(sql);
         return mapRows(rs);
+
     } catch (Exception e) {
         e.printStackTrace();
     }
@@ -201,12 +202,13 @@ public class RecipeDAO {
     public void updateRecipe(Recipe recipe) {
           try {
         var conn = connectionUtil.getConnection();
-        String sql = "UPDATE RECIPE SET instructions = ?, chef_id = ? WHERE id = ?";
+        String sql = "UPDATE RECIPE SET name = ?, instructions = ?, chef_id = ? WHERE id = ?";
         var ps = conn.prepareStatement(sql);
 
-        ps.setString(1, recipe.getInstructions());
-        ps.setInt(2, recipe.getAuthor().getId());
-        ps.setInt(3, recipe.getId());
+        ps.setString(1, recipe.getName());
+        ps.setString(2, recipe.getInstructions());
+        ps.setInt(3, recipe.getAuthor().getId());
+        ps.setInt(4, recipe.getId());
 
         ps.executeUpdate();
 
@@ -225,17 +227,11 @@ public class RecipeDAO {
          try {
         var conn = connectionUtil.getConnection();
         
-        // Delete from join table first
-        String sql1 = "DELETE FROM RECIPE_INGREDIENT WHERE recipe_id = ?";
-        var ps1 = conn.prepareStatement(sql1);
-        ps1.setInt(1, recipe.getId());
-        ps1.executeUpdate();
-        
-        // Delete from recipe table
-        String sql2 = "DELETE FROM RECIPE WHERE id = ?";
-        var ps2 = conn.prepareStatement(sql2);
-        ps2.setInt(1, recipe.getId());
-        ps2.executeUpdate();
+        // Delete from recipe table (cascade will handle RECIPE_INGREDIENT)
+        String sql = "DELETE FROM RECIPE WHERE id = ?";
+        var ps = conn.prepareStatement(sql);
+        ps.setInt(1, recipe.getId());
+        ps.executeUpdate();
 
     } catch (Exception e) {
         e.printStackTrace();
