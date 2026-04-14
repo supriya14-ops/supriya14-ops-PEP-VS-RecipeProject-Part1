@@ -10,6 +10,7 @@ import com.revature.controller.RecipeController;
 import com.revature.model.Recipe;
 import com.revature.service.AuthenticationService;
 import com.revature.service.RecipeService;
+import com.revature.util.Page;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,20 +22,22 @@ public class RecipeControllerTest {
     public void testGetRecipesWithRecipeName() throws Exception {
         RecipeService recipeService = mock(RecipeService.class);
         AuthenticationService authService = mock(AuthenticationService.class);
-        List<Recipe> mockResults = Collections.singletonList(new Recipe("Grilled Cheese", "Grill bread and cheese"));
-        when(recipeService.getRecipes(null, null, null, null)).thenReturn(mockResults);
+        Recipe mockRecipe = new Recipe("Grilled Cheese", "Grill bread and cheese");
+        Page<Recipe> mockPage = new Page<>(1, 10, 1, 1, Collections.singletonList(mockRecipe));
+        when(recipeService.searchRecipes(null, 1, 10, "id", "asc")).thenReturn(mockPage);
 
         Context ctx = mock(Context.class);
         when(ctx.queryParam("page")).thenReturn(null);
-        when(ctx.queryParam("size")).thenReturn(null);
-        when(ctx.queryParam("sort")).thenReturn(null);
-        when(ctx.queryParam("filter")).thenReturn(null);
+        when(ctx.queryParam("pageSize")).thenReturn(null);
+        when(ctx.queryParam("sortBy")).thenReturn(null);
+        when(ctx.queryParam("sortDirection")).thenReturn(null);
+        when(ctx.queryParam("term")).thenReturn(null);
 
         Handler getRecipes = new RecipeController(recipeService, authService).fetchAllRecipes;
         getRecipes.handle(ctx);
 
         verify(ctx).status(200);
-        verify(ctx).json(mockResults);
+        verify(ctx).json(mockPage);
     }
 
     @Test
@@ -43,19 +46,21 @@ public class RecipeControllerTest {
         AuthenticationService authService = mock(AuthenticationService.class);
         List<Recipe> allRecipes = Arrays.asList(new Recipe("Apple Pie"), new Recipe("Grilled Cheese"),
                 new Recipe("Steak"));
-        when(recipeService.getRecipes(null, null, null, null)).thenReturn(allRecipes);
+        Page<Recipe> mockPage = new Page<>(1, 10, 1, 3, allRecipes);
+        when(recipeService.searchRecipes(null, 1, 10, "id", "asc")).thenReturn(mockPage);
 
         Context ctx = mock(Context.class);
         when(ctx.queryParam("page")).thenReturn(null);
-        when(ctx.queryParam("size")).thenReturn(null);
-        when(ctx.queryParam("sort")).thenReturn(null);
-        when(ctx.queryParam("filter")).thenReturn(null);
+        when(ctx.queryParam("pageSize")).thenReturn(null);
+        when(ctx.queryParam("sortBy")).thenReturn(null);
+        when(ctx.queryParam("sortDirection")).thenReturn(null);
+        when(ctx.queryParam("term")).thenReturn(null);
 
         Handler getRecipesHandler = new RecipeController(recipeService, authService).fetchAllRecipes;
         getRecipesHandler.handle(ctx);
 
         verify(ctx).status(200); // Set the response status code
-        verify(ctx).json(allRecipes);
+        verify(ctx).json(mockPage);
     }
 
     @Test

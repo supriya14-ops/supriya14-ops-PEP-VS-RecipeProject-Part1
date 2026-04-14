@@ -92,6 +92,11 @@ public class AuthenticationController {
      */
     public void logout(Context ctx) {
          String token = ctx.header("Authorization");
+         
+         // Strip "Bearer " prefix if present
+         if (token != null && token.startsWith("Bearer ")) {
+             token = token.replace("Bearer ", "");
+         }
 
        authService.logout(token);
        ctx.status(200);

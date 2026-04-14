@@ -1,19 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.revature.IngredientIntegrationTest
 -------------------------------------------------------------------------------
-Tests run: 10, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 2.68 s <<< FAILURE! - in com.revature.IngredientIntegrationTest
-testPageIngredients  Time elapsed: 1.562 s  <<< FAILURE!
-org.opentest4j.AssertionFailedError: expected: <200> but was: <500>
-	at com.revature.IngredientIntegrationTest.lambda$testPageIngredients$7(IngredientIntegrationTest.java:93)
-	at com.revature.IngredientIntegrationTest.testPageIngredients(IngredientIntegrationTest.java:92)
-
-testGetIngredientsByTermSorted  Time elapsed: 0.067 s  <<< FAILURE!
-org.opentest4j.AssertionFailedError: expected: <200> but was: <500>
-	at com.revature.IngredientIntegrationTest.lambda$testGetIngredientsByTermSorted$9(IngredientIntegrationTest.java:113)
-	at com.revature.IngredientIntegrationTest.testGetIngredientsByTermSorted(IngredientIntegrationTest.java:112)
-
-testGetIngredientsByTerm  Time elapsed: 0.071 s  <<< FAILURE!
-org.opentest4j.AssertionFailedError: expected: <200> but was: <500>
-	at com.revature.IngredientIntegrationTest.lambda$testGetIngredientsByTerm$8(IngredientIntegrationTest.java:103)
-	at com.revature.IngredientIntegrationTest.testGetIngredientsByTerm(IngredientIntegrationTest.java:102)
-
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.845 s - in com.revature.IngredientIntegrationTest

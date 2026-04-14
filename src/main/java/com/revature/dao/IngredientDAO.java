@@ -259,9 +259,29 @@ public class IngredientDAO {
     private Page<Ingredient> pageResults(ResultSet resultSet, PageOptions pageOptions) throws SQLException {
         List<Ingredient> ingredients = mapRows(resultSet);
         int offset = (pageOptions.getPageNumber() - 1) * pageOptions.getPageSize();
-        int limit = offset + pageOptions.getPageSize();
+        int limit = Math.min(offset + pageOptions.getPageSize(), ingredients.size());
+        
+        // Handle sorting based on pageOptions
+        String sortBy = pageOptions.getSortBy() != null ? pageOptions.getSortBy() : "id";
+        String sortDirection = pageOptions.getSortDirection() != null ? pageOptions.getSortDirection() : "asc";
+        
+        // Sort the ingredients based on sortBy field
+        if ("name".equals(sortBy)) {
+            ingredients.sort((a, b) -> {
+                int comparison = a.getName().compareTo(b.getName());
+                return "desc".equals(sortDirection) ? -comparison : comparison;
+            });
+        } else {
+            // Default sort by id
+            ingredients.sort((a, b) -> {
+                int comparison = Integer.compare(a.getId(), b.getId());
+                return "desc".equals(sortDirection) ? -comparison : comparison;
+            });
+        }
+        
         List<Ingredient> subList = ingredients.subList(offset, limit);
+        int totalPages = (int) Math.ceil(ingredients.size() / ((float) pageOptions.getPageSize()));
         return new Page<>(pageOptions.getPageNumber(), pageOptions.getPageSize(),
-                (int) Math.ceil(ingredients.size() / ((float) pageOptions.getPageSize())), ingredients.size(), subList);
+                totalPages, ingredients.size(), subList);
     }
 }

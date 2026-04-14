@@ -115,7 +115,7 @@ public class IngredientController {
      */
     public void getIngredients(Context ctx) {
        Integer page = getParamAsClassOrElse(ctx, "page", Integer.class, null);
-        Integer size = getParamAsClassOrElse(ctx, "size", Integer.class, null);
+        Integer pageSize = getParamAsClassOrElse(ctx, "pageSize", Integer.class, null);
         String sort = getParamAsClassOrElse(ctx, "sort", String.class, null);
         String sortBy = getParamAsClassOrElse(ctx, "sortBy", String.class, null);
         String sortDirection = getParamAsClassOrElse(ctx, "sortDirection", String.class, null);
@@ -127,16 +127,16 @@ public class IngredientController {
             filter = term;
         }
 
-        // If no pagination params → return all
-        if (page == null && size == null && sort == null && sortBy == null && filter == null) {
-            List<Ingredient> ingredients = (List<Ingredient>) ingredientService.getIngredients(null, null, null, null);
+        // If no pagination params (page, pageSize, sortBy) → return list
+        if (page == null && pageSize == null && sortBy == null) {
+            List<Ingredient> ingredients = (List<Ingredient>) ingredientService.getIngredients(null, null, null, filter);
             ctx.json(ingredients);
             ctx.status(200);
         } else {
             // Pagination + filtering
             String sortField = sort != null ? sort : (sortBy != null ? sortBy : "id");
             String sortDir = sortDirection != null ? sortDirection : "asc";
-            Object result = ingredientService.searchIngredients(filter, page != null ? page : 1, size != null ? size : 10, sortField, sortDir);
+            Object result = ingredientService.searchIngredients(filter, page != null ? page : 1, pageSize != null ? pageSize : 10, sortField, sortDir);
             ctx.json(result);
             ctx.status(200);
         }

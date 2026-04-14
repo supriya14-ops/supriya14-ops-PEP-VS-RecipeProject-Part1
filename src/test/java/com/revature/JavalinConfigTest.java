@@ -2,6 +2,7 @@ package com.revature;
 
 import java.sql.SQLException;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,9 +18,11 @@ import com.revature.service.IngredientService;
 import com.revature.service.RecipeService;
 import com.revature.util.ConnectionUtil;
 import com.revature.util.JavalinAppUtil;
+import io.javalin.Javalin;
 
 class JavalinConfigTest {
 
+	private static final int PORT = 8086;
 	private RecipeDAO recipeDao;
 	private RecipeService recipeService;
 	private RecipeController recipeController;
@@ -30,6 +33,7 @@ class JavalinConfigTest {
 	private IngredientDAO ingredientDao;
 	private IngredientService ingredientService;
 	private IngredientController ingredientController;
+	private Javalin app;
 
 	@BeforeEach
 	void setUpTestsData() throws SQLException {
@@ -48,10 +52,18 @@ class JavalinConfigTest {
 		recipeController = new RecipeController(recipeService, authService);
 	}
 
+	@AfterEach
+	void tearDown() {
+		if (app != null) {
+			app.stop();
+		}
+	}
+
 	@Test
 	void test() {
 
-		new JavalinAppUtil(recipeController, authController, ingredientController).getApp().start();
+		app = new JavalinAppUtil(recipeController, authController, ingredientController).getApp();
+		app.start(PORT);
 
 	}
 
