@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.revature.dao.IngredientDAO;
 import com.revature.model.Ingredient;
 import com.revature.util.Page;
+import com.revature.util.PageOptions;
 
 
 /**
@@ -30,7 +31,7 @@ public class IngredientService {
      */
 
     public IngredientService(IngredientDAO ingredientDAO) {
-       
+       this.ingredientDAO = ingredientDAO;
     }
 
     /**
@@ -40,7 +41,8 @@ public class IngredientService {
      * @return an Optional containing the Ingredient if found, or an empty Optional if not found
      */
     public Optional<Ingredient> findIngredient(int id) {
-        return null;
+        Ingredient ingredient = ingredientDAO.getIngredientById(id);
+        return Optional.ofNullable(ingredient);
     }
 
     /**
@@ -54,7 +56,11 @@ public class IngredientService {
      * @return a Page object containing the list of Ingredients matching the criteria
      */
     public Page<Ingredient> searchIngredients(String term, int page, int pageSize, String sortBy, String sortDirection) {
-        return null;
+       PageOptions pageOptions = new com.revature.util.PageOptions(page, pageSize, sortBy, sortDirection);
+       if (term == null || term.isEmpty()) {
+           return ingredientDAO.getAllIngredients(pageOptions);
+       }
+       return ingredientDAO.searchIngredients(term, pageOptions);
     }
 
     /**
@@ -65,7 +71,10 @@ public class IngredientService {
      * @return a list of Ingredient objects that match the search term
      */
     public List<Ingredient> searchIngredients(String term) {
-        return null;
+            if (term == null || term.isEmpty()) {
+        return ingredientDAO.getAllIngredients();
+    }
+      return ingredientDAO.searchIngredients(term); 
     }
 
     /**
@@ -75,7 +84,10 @@ public class IngredientService {
      */
 
     public void deleteIngredient(int id) {
-        
+         Ingredient ingredient = ingredientDAO.getIngredientById(id);
+    if (ingredient != null) {
+        ingredientDAO.deleteIngredient(ingredient);
+    }
     }
 
     /**
@@ -86,6 +98,48 @@ public class IngredientService {
      * @param ingredient the Ingredient entity to be saved or updated
      */
     public void saveIngredient(Ingredient ingredient) {
+        if (ingredient.getId() == 0) {
+    
+            int generatedId = ingredientDAO.createIngredient(ingredient);
+            ingredient.setId(generatedId);
+        } else {
+            ingredientDAO.updateIngredient(ingredient);
+        }
+    }
+
+    public void createIngredient(Ingredient ingredient) {
+        saveIngredient(ingredient);
+    }
+
+    public List<Ingredient> getIngredients(Object object, Object object2, Object object3, Object object4) {
+        Integer page = (Integer) object;
+        Integer size = (Integer) object2;
+        String sort = (String) object3;
+        String filter = (String) object4;
         
+        if (page == null && size == null && sort == null && filter == null) {
+            return ingredientDAO.getAllIngredients();
+        }
+        
+        Page<Ingredient> ingredientPage = searchIngredients(filter != null ? filter : "", 
+            page != null ? page : 1, 
+            size != null ? size : 10, 
+            sort != null ? sort : "id", 
+            "asc");
+        return ingredientPage.getItems();
+    }
+
+    public boolean updateIngredient(int id, Ingredient updatedIngredient) {
+        Ingredient existing = ingredientDAO.getIngredientById(id);
+        if (existing != null) {
+            updatedIngredient.setId(id);
+            ingredientDAO.updateIngredient(updatedIngredient);
+            return true;
+        }
+        return false;
+    }
+
+    public Ingredient getIngredientById(int id) {
+        return ingredientDAO.getIngredientById(id);
     }
 }

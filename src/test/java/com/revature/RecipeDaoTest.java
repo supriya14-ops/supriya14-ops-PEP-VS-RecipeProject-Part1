@@ -154,9 +154,10 @@ class RecipeDaoTest {
         recipeDao.updateRecipe(recipeToUpdate);
 
         // Assert
-        verify(preparedStatement).setString(1, recipeToUpdate.getInstructions());
-        verify(preparedStatement).setInt(2, recipeToUpdate.getAuthor().getId());
-        verify(preparedStatement).setInt(3, recipeToUpdate.getId());
+        verify(preparedStatement).setString(1, recipeToUpdate.getName());
+        verify(preparedStatement).setString(2, recipeToUpdate.getInstructions());
+        verify(preparedStatement).setInt(3, recipeToUpdate.getAuthor().getId());
+        verify(preparedStatement).setInt(4, recipeToUpdate.getId());
     }
 
     @Test
@@ -169,8 +170,8 @@ class RecipeDaoTest {
         recipeDao.deleteRecipe(recipeToDelete);
 
         // Assert
-        verify(preparedStatement, times(2)).setInt(1, recipeToDelete.getId()); // Verify setInt was called twice
-        verify(preparedStatement, times(2)).executeUpdate(); // Verify executeUpdate was called twice
+        verify(preparedStatement).setInt(1, recipeToDelete.getId());
+        verify(preparedStatement).executeUpdate();
     }
 
     @Test
@@ -187,7 +188,7 @@ class RecipeDaoTest {
         when(resultSet.getString("instructions"))
                 .thenReturn("Put carrot in water. Boil. Maybe salt.",
                         "Put potato in water. Boil. Maybe salt.");
-        when(resultSet.getInt("author_id")).thenReturn(1, 2);
+        when(resultSet.getInt("chef_id")).thenReturn(1, 2);
         when(chefDao.getChefById(1)).thenReturn(chefList.get(0));
         when(chefDao.getChefById(2)).thenReturn(chefList.get(1));
 

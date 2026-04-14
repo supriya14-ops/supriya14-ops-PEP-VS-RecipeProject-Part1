@@ -45,7 +45,14 @@ CREATE TABLE INGREDIENT (
 -- 5. unit: A non-nullable varchar field (max 20 characters) to store the unit of the volume.
 -- 6. is_metric: A boolean field to indicate if the unit is in metric. Defaults to false.
 CREATE TABLE RECIPE_INGREDIENT (
-
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    recipe_id INT NOT NULL,
+    ingredient_id INT NOT NULL,
+    vol DECIMAL,
+    unit VARCHAR(20) NOT NULL,
+    is_metric BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (recipe_id) REFERENCES RECIPE(id),
+    FOREIGN KEY (ingredient_id) REFERENCES INGREDIENT(id)
 );
 
 -- DO NOT EDIT ANY CODE BELOW THIS LINE!

@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------------
+Test set: com.revature.RecipeIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 5, Errors: 0, Skipped: 0, Time elapsed: 3.4 s <<< FAILURE! - in com.revature.RecipeIntegrationTest
+testGetAllRecipes  Time elapsed: 0.604 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <200> but was: <404>
+	at com.revature.RecipeIntegrationTest.testGetAllRecipes(RecipeIntegrationTest.java:129)
+
+testDeleteRecipe  Time elapsed: 0.5 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Recipe should delete successfully ==> expected: <200> but was: <401>
+	at com.revature.RecipeIntegrationTest.testDeleteRecipe(RecipeIntegrationTest.java:172)
+
+testPostRecipe  Time elapsed: 0.446 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unauthorized ==> expected: <201> but was: <401>
+	at com.revature.RecipeIntegrationTest.testPostRecipe(RecipeIntegrationTest.java:142)
+
+testGetRecipe  Time elapsed: 0.614 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Should return with a success status code.  Expected: 200 Actual: 404 ==> expected: <200> but was: <404>
+	at com.revature.RecipeIntegrationTest.testGetRecipe(RecipeIntegrationTest.java:118)
+
+testFilteredPageOfRecipes  Time elapsed: 0.566 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: The single result should be returned ==> expected: <{"pageNumber":2,"pageSize":1,"totalPages":2,"totalElements":2,"items":[{"id":3,"name":"tomato soup","instructions":"Put tomato in water.  Boil.  Maybe salt.","author":{"id":2,"username":"CharlieBrown","password":"thegreatpumpkin","email":"goodgrief@peanuts.com","admin":false},"ingredients":null}]}> but was: <No recipes found>
+	at com.revature.RecipeIntegrationTest.testFilteredPageOfRecipes(RecipeIntegrationTest.java:190)
+

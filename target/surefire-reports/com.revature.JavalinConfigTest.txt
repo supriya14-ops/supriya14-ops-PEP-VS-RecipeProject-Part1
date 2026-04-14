@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: com.revature.JavalinConfigTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in com.revature.JavalinConfigTest
+test  Time elapsed: 0.001 s  <<< ERROR!
+io.javalin.util.JavalinBindException: Port already in use. Make sure no other process is using port 8080 and try again.
+	at com.revature.JavalinConfigTest.test(JavalinConfigTest.java:54)
+Caused by: java.io.IOException: Failed to bind to 0.0.0.0/0.0.0.0:8080
+	at com.revature.JavalinConfigTest.test(JavalinConfigTest.java:54)
+Caused by: java.net.BindException: Address already in use: bind
+	at com.revature.JavalinConfigTest.test(JavalinConfigTest.java:54)
+

@@ -166,7 +166,7 @@ class RecipeIntegrationTest {
 	void testDeleteRecipe() throws IOException {
 
 		Request request = new Request.Builder().url(BASE_URL + "/recipes/2")
-				.addHeader("Authorization", "Bearer" + token).delete()
+				.addHeader("Authorization", "Bearer " + token).delete()
 				.build();
 		Response response = client.newCall(request).execute();
 		Assertions.assertEquals(200, response.code(), () -> "Recipe should delete successfully");

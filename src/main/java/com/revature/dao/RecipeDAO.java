@@ -47,7 +47,9 @@ public class RecipeDAO {
      * @param connectionUtil - the utility used to connect to the database
 	 */
 	public RecipeDAO(ChefDAO chefDAO, IngredientDAO ingredientDAO, ConnectionUtil connectionUtil) {
-		
+		 this.chefDAO = chefDAO;
+         this.ingredientDAO = ingredientDAO;
+         this.connectionUtil = connectionUtil;
 	}
 
     /**
@@ -57,7 +59,17 @@ public class RecipeDAO {
      */
 
     public List<Recipe> getAllRecipes() {
-        return(null);
+         try {
+        var conn = connectionUtil.getConnection();
+        String sql = "SELECT * FROM RECIPE ORDER BY id";
+        var ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        return mapRows(rs);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return new ArrayList<>();
     }
 
     /**
@@ -67,7 +79,17 @@ public class RecipeDAO {
      * @return a paginated list of Recipe objects
      */
     public Page<Recipe> getAllRecipes(PageOptions pageOptions) {
-        return null;
+          try {
+        var conn = connectionUtil.getConnection();
+        String sql = "SELECT * FROM RECIPE ORDER BY id";
+        var ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        return pageResults(rs, pageOptions);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+		return null;
     }
 
     /**
@@ -78,8 +100,19 @@ public class RecipeDAO {
      */
 
     public List<Recipe> searchRecipesByTerm(String term) {
-        return null;
-    }
+        try {
+			var conn = connectionUtil.getConnection();
+			String sql = "SELECT * FROM RECIPE WHERE name LIKE ? ORDER BY id";
+			var ps = conn.prepareStatement(sql);
+			ps.setString(1, "%" + term + "%");
+			ResultSet rs = ps.executeQuery();
+
+			return mapRows(rs);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ArrayList<>();
+	}
 
     /**
      * TODO: Searches for recipes that match a specified term and returns a paginated result.
@@ -90,7 +123,18 @@ public class RecipeDAO {
      */
 
     public Page<Recipe> searchRecipesByTerm(String term, PageOptions pageOptions) {
-        return null;
+           try {
+        var conn = connectionUtil.getConnection();
+        String sql = "SELECT * FROM RECIPE WHERE name LIKE ? ORDER BY id";
+        var ps = conn.prepareStatement(sql);
+        ps.setString(1, "%" + term + "%");
+
+        ResultSet rs = ps.executeQuery();
+        return pageResults(rs, pageOptions);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+		return null;
     }
 
     /**
@@ -101,6 +145,19 @@ public class RecipeDAO {
      */
 
     public Recipe getRecipeById(int id) {
+		    try {
+        var conn = connectionUtil.getConnection();
+        String sql = "SELECT * FROM RECIPE WHERE id = ?";
+        var ps = conn.prepareStatement(sql);
+        ps.setInt(1, id);
+
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return mapSingleRow(rs);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
         return null;
     }
         
@@ -113,6 +170,25 @@ public class RecipeDAO {
      */
 
     public int createRecipe(Recipe recipe) {
+		try {
+        var conn = connectionUtil.getConnection();
+        String sql = "INSERT INTO RECIPE (name, instructions, chef_id) VALUES (?, ?, ?)";
+        var ps = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
+
+        ps.setString(1, recipe.getName());
+        ps.setString(2, recipe.getInstructions());
+        ps.setInt(3, recipe.getAuthor().getId());
+
+        ps.executeUpdate();
+
+        ResultSet rs = ps.getGeneratedKeys();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
         return(0);
     }
 
@@ -123,7 +199,20 @@ public class RecipeDAO {
      */
 
     public void updateRecipe(Recipe recipe) {
-        
+          try {
+        var conn = connectionUtil.getConnection();
+        String sql = "UPDATE RECIPE SET instructions = ?, chef_id = ? WHERE id = ?";
+        var ps = conn.prepareStatement(sql);
+
+        ps.setString(1, recipe.getInstructions());
+        ps.setInt(2, recipe.getAuthor().getId());
+        ps.setInt(3, recipe.getId());
+
+        ps.executeUpdate();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
     }
 
     /**
@@ -133,7 +222,24 @@ public class RecipeDAO {
      */
 
     public void deleteRecipe(Recipe recipe) {
+         try {
+        var conn = connectionUtil.getConnection();
         
+        // Delete from join table first
+        String sql1 = "DELETE FROM RECIPE_INGREDIENT WHERE recipe_id = ?";
+        var ps1 = conn.prepareStatement(sql1);
+        ps1.setInt(1, recipe.getId());
+        ps1.executeUpdate();
+        
+        // Delete from recipe table
+        String sql2 = "DELETE FROM RECIPE WHERE id = ?";
+        var ps2 = conn.prepareStatement(sql2);
+        ps2.setInt(1, recipe.getId());
+        ps2.executeUpdate();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
     }
 
     // below are helper methods for your convenience
@@ -189,8 +295,10 @@ public class RecipeDAO {
 		int offset = (pageOptions.getPageNumber() - 1) * pageOptions.getPageSize();
 		int limit = offset + pageOptions.getPageSize();
 		List<Recipe> slicedList = sliceList(recipes, offset, limit);
+		// Use ceiling division to calculate totalPages correctly
+		int totalPages = (recipes.size() + pageOptions.getPageSize() - 1) / pageOptions.getPageSize();
 		return new Page<>(pageOptions.getPageNumber(), pageOptions.getPageSize(),
-				recipes.size() / pageOptions.getPageSize(), recipes.size(), slicedList);
+				totalPages, recipes.size(), slicedList);
 	}
 
 	/**
@@ -205,6 +313,8 @@ public class RecipeDAO {
 	 */
 	private List<Recipe> sliceList(List<Recipe> list, int start, int end) {
 		List<Recipe> sliced = new ArrayList<>();
+		// Clamp end to prevent IndexOutOfBoundsException
+		end = Math.min(end, list.size());
 		for (int i = start; i < end; i++) {
 			sliced.add(list.get(i));
 		}

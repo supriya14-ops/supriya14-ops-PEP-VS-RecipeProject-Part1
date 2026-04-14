@@ -33,7 +33,7 @@ public class IngredientDAO {
      * @param connectionUtil the utility used to connect to the database
      */
     public IngredientDAO(ConnectionUtil connectionUtil) {
-        
+        this.connectionUtil = connectionUtil;
     }
 
     /**
@@ -43,6 +43,19 @@ public class IngredientDAO {
      * @return the Ingredient object with the specified id.
      */
     public Ingredient getIngredientById(int id) {
+          try {
+        var conn = connectionUtil.getConnection();
+        String sql = "SELECT * FROM INGREDIENT WHERE id = ?";
+        var ps = conn.prepareStatement(sql);
+        ps.setInt(1, id);
+
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return mapSingleRow(rs);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
         return null;
     }
 
@@ -53,6 +66,22 @@ public class IngredientDAO {
      * @return the unique identifier of the created Ingredient.
      */
     public int createIngredient(Ingredient ingredient) {
+         try {
+        var conn = connectionUtil.getConnection();
+        String sql = "INSERT INTO INGREDIENT (name) VALUES (?)";
+        var ps = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
+
+        ps.setString(1, ingredient.getName());
+        ps.executeUpdate();
+
+        ResultSet rs = ps.getGeneratedKeys();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
         return 0;
     }
 
@@ -62,7 +91,24 @@ public class IngredientDAO {
      * @param ingredient the Ingredient object to be deleted.
      */
     public void deleteIngredient(Ingredient ingredient) {
-        
+        try {
+        var conn = connectionUtil.getConnection();
+
+        // delete from join table first
+        String sql1 = "DELETE FROM RECIPE_INGREDIENT WHERE ingredient_id = ?";
+        var ps1 = conn.prepareStatement(sql1);
+        ps1.setInt(1, ingredient.getId());
+        ps1.executeUpdate();
+
+        // delete ingredient
+        String sql2 = "DELETE FROM INGREDIENT WHERE id = ?";
+        var ps2 = conn.prepareStatement(sql2);
+        ps2.setInt(1, ingredient.getId());
+        ps2.executeUpdate();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
     }
 
     /**
@@ -71,7 +117,19 @@ public class IngredientDAO {
      * @param ingredient the Ingredient object containing updated information.
      */
     public void updateIngredient(Ingredient ingredient) {
-        
+            try {
+        var conn = connectionUtil.getConnection();
+        String sql = "UPDATE INGREDIENT SET name = ? WHERE id = ?";
+        var ps = conn.prepareStatement(sql);
+
+        ps.setString(1, ingredient.getName());
+        ps.setInt(2, ingredient.getId());
+
+        ps.executeUpdate();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
     }
 
     /**
@@ -80,7 +138,18 @@ public class IngredientDAO {
      * @return a list of all Ingredient objects.
      */
     public List<Ingredient> getAllIngredients() {
-        return null;
+        try {
+        var conn = connectionUtil.getConnection();
+        String sql = "SELECT * FROM INGREDIENT ORDER BY id";
+        var ps = conn.prepareStatement(sql);
+
+        ResultSet rs = ps.executeQuery();
+        return mapRows(rs);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return new ArrayList<>();
     }
 
     /**
@@ -90,6 +159,17 @@ public class IngredientDAO {
      * @return a Page of Ingredient objects containing the retrieved ingredients.
      */
     public Page<Ingredient> getAllIngredients(PageOptions pageOptions) {
+            try {
+        var conn = connectionUtil.getConnection();
+        String sql = "SELECT * FROM INGREDIENT ORDER BY id";
+        var ps = conn.prepareStatement(sql);
+
+        ResultSet rs = ps.executeQuery();
+        return pageResults(rs, pageOptions);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
         return null;
     }
 
@@ -100,7 +180,20 @@ public class IngredientDAO {
      * @return a list of Ingredient objects that match the search term.
      */
     public List<Ingredient> searchIngredients(String term) {
-        return null;
+         try {
+        var conn = connectionUtil.getConnection();
+        String sql = "SELECT * FROM INGREDIENT WHERE name LIKE ? ORDER BY id";
+        var ps = conn.prepareStatement(sql);
+
+        ps.setString(1, "%" + term + "%");
+
+        ResultSet rs = ps.executeQuery();
+        return mapRows(rs);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return new ArrayList<>();
     }
 
     /**
@@ -111,6 +204,19 @@ public class IngredientDAO {
      * @return a Page of Ingredient objects containing the retrieved ingredients.
      */
     public Page<Ingredient> searchIngredients(String term, PageOptions pageOptions) {
+           try {
+        var conn = connectionUtil.getConnection();
+        String sql = "SELECT * FROM INGREDIENT WHERE name LIKE ? ORDER BY id";
+        var ps = conn.prepareStatement(sql);
+
+        ps.setString(1, "%" + term + "%");
+
+        ResultSet rs = ps.executeQuery();
+        return pageResults(rs, pageOptions);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
         return null;
     }
 

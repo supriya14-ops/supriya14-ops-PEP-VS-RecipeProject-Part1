@@ -22,10 +22,13 @@ public class RecipeControllerTest {
         RecipeService recipeService = mock(RecipeService.class);
         AuthenticationService authService = mock(AuthenticationService.class);
         List<Recipe> mockResults = Collections.singletonList(new Recipe("Grilled Cheese", "Grill bread and cheese"));
-        when(recipeService.searchRecipes("Cheese")).thenReturn(mockResults);
+        when(recipeService.getRecipes(null, null, null, null)).thenReturn(mockResults);
 
         Context ctx = mock(Context.class);
-        when(ctx.queryParam("name")).thenReturn("Cheese");
+        when(ctx.queryParam("page")).thenReturn(null);
+        when(ctx.queryParam("size")).thenReturn(null);
+        when(ctx.queryParam("sort")).thenReturn(null);
+        when(ctx.queryParam("filter")).thenReturn(null);
 
         Handler getRecipes = new RecipeController(recipeService, authService).fetchAllRecipes;
         getRecipes.handle(ctx);
@@ -40,11 +43,13 @@ public class RecipeControllerTest {
         AuthenticationService authService = mock(AuthenticationService.class);
         List<Recipe> allRecipes = Arrays.asList(new Recipe("Apple Pie"), new Recipe("Grilled Cheese"),
                 new Recipe("Steak"));
-        when(recipeService.searchRecipes(null)).thenReturn(allRecipes);
+        when(recipeService.getRecipes(null, null, null, null)).thenReturn(allRecipes);
 
         Context ctx = mock(Context.class);
-        when(ctx.queryParam("name")).thenReturn(null);
-        when(ctx.queryParam("ingredient")).thenReturn(null);
+        when(ctx.queryParam("page")).thenReturn(null);
+        when(ctx.queryParam("size")).thenReturn(null);
+        when(ctx.queryParam("sort")).thenReturn(null);
+        when(ctx.queryParam("filter")).thenReturn(null);
 
         Handler getRecipesHandler = new RecipeController(recipeService, authService).fetchAllRecipes;
         getRecipesHandler.handle(ctx);
@@ -57,10 +62,13 @@ public class RecipeControllerTest {
     public void testGetRecipesWithNoResults() throws Exception {
         RecipeService recipeService = mock(RecipeService.class);
         AuthenticationService authService = mock(AuthenticationService.class);
-        when(recipeService.searchRecipes("Nonexistent Recipe")).thenReturn(Collections.emptyList());
+        when(recipeService.getRecipes(null, null, null, null)).thenReturn(Collections.emptyList());
 
         Context ctx = mock(Context.class);
-        when(ctx.queryParam("name")).thenReturn("Nonexistent Recipe");
+        when(ctx.queryParam("page")).thenReturn(null);
+        when(ctx.queryParam("size")).thenReturn(null);
+        when(ctx.queryParam("sort")).thenReturn(null);
+        when(ctx.queryParam("filter")).thenReturn(null);
 
         Handler getRecipes = new RecipeController(recipeService, authService).fetchAllRecipes;
         getRecipes.handle(ctx);

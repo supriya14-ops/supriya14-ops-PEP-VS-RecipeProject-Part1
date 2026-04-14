@@ -4,6 +4,9 @@ import io.javalin.http.Handler;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import java.util.List;
+
+import com.revature.model.Recipe;
 import com.revature.service.AuthenticationService;
 import com.revature.service.RecipeService;
 
@@ -30,7 +33,8 @@ public class RecipeController {
      * * @param authService the service used to manage authentication-related operations
      */
     public RecipeController(RecipeService recipeService, AuthenticationService authService) {
-        
+        this.recipeService = recipeService;
+        this.authService = authService;
     }
 
     /**
@@ -39,7 +43,20 @@ public class RecipeController {
      * Responds with a 200 OK status and the list of recipes, or 404 Not Found with a result of "No recipes found".
      */
     public Handler fetchAllRecipes = ctx -> {
-        
+        Integer page = getParamAsClassOrElse(ctx, "page", Integer.class, null);
+        Integer size = getParamAsClassOrElse(ctx, "size", Integer.class, null);
+        String sort = getParamAsClassOrElse(ctx, "sort", String.class, null);
+        String filter = getParamAsClassOrElse(ctx, "filter", String.class, null);
+
+        List<Recipe> recipes = recipeService.getRecipes(page, size, sort, filter);
+
+        if (recipes != null && !recipes.isEmpty()) {
+            ctx.json(recipes);
+            ctx.status(200);
+        } else {
+            ctx.status(404);
+            ctx.result("No recipes found");
+        }
     };
 
     /**
@@ -50,7 +67,17 @@ public class RecipeController {
      * If unsuccessful, responds with a 404 status code and a result of "Recipe not found".
      */
     public Handler fetchRecipeById = ctx -> {
-        
+        int id = Integer.parseInt(ctx.pathParam("id"));
+
+        Recipe recipe = recipeService.getRecipeById(id);
+
+        if (recipe != null) {
+            ctx.json(recipe);
+            ctx.status(200);
+        } else {
+            ctx.status(404);
+            ctx.result("Recipe not found");
+        }
     };
 
     /**
@@ -60,7 +87,19 @@ public class RecipeController {
      * If unauthorized, responds with a 401 Unauthorized status.
      */
     public Handler createRecipe = ctx -> {
-       
+        String token = ctx.header("Authorization");
+
+        // Check authentication
+        if (token == null || !authService.isValidToken(token.replace("Bearer ", ""))) {
+            ctx.status(401);
+            ctx.result("Unauthorized");
+            return;
+        }
+
+        Recipe recipe = ctx.bodyAsClass(Recipe.class);
+        recipeService.createRecipe(recipe);
+
+        ctx.status(201);
     };
 
     /**
@@ -71,8 +110,27 @@ public class RecipeController {
      * Otherwise, responds with a 404 status and a result of "Recipe not found."
      */
     public Handler deleteRecipe = ctx -> {
+        String token = ctx.header("Authorization");
+
+        // Check authentication
+        if (token == null || !authService.isValidToken(token.replace("Bearer ", ""))) {
+            ctx.status(401);
+            ctx.result("Unauthorized");
+            return;
+        }
+
         int id = Integer.parseInt(ctx.pathParam("id"));
+        Recipe recipe = recipeService.getRecipeById(id);
+
+        if (recipe == null) {
+            ctx.status(404);
+            ctx.result("Recipe not found.");
+            return;
+        }
+
         recipeService.deleteRecipe(id);
+        ctx.status(200);
+        ctx.result("Recipe deleted successfully.");
     };
 
     /**
@@ -83,7 +141,18 @@ public class RecipeController {
      * If unsuccessfuly, responds with a 404 status code and a result of "Recipe not found."
      */
     public Handler updateRecipe = ctx -> {
+          int id = Integer.parseInt(ctx.pathParam("id"));
+        Recipe updatedRecipe = ctx.bodyAsClass(Recipe.class);
 
+        Recipe result = recipeService.updateRecipe(id, updatedRecipe);
+
+        if (result != null) {
+            ctx.json(result);
+            ctx.status(200);
+        } else {
+            ctx.status(404);
+            ctx.result("Recipe not found.");
+        }
     };
 
     /**

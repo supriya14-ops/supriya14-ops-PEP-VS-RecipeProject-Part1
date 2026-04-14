@@ -3,6 +3,9 @@ package com.revature.controller;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import java.util.List;
+
+import com.revature.model.Ingredient;
 import com.revature.service.IngredientService;
 
 
@@ -30,7 +33,7 @@ public class IngredientController {
      */
 
     public IngredientController(IngredientService ingredientService) {
-        
+        this.ingredientService = ingredientService;
     }
 
     /**
@@ -41,7 +44,16 @@ public class IngredientController {
      * @param ctx the Javalin context containing the request path parameter for the ingredient ID
      */
     public void getIngredient(Context ctx) {
-        
+        int id = Integer.parseInt(ctx.pathParam("id"));
+
+        Ingredient ingredient = ingredientService.getIngredientById(id);
+
+        if (ingredient != null) {
+            ctx.json(ingredient);
+            ctx.status(200);
+        } else {
+            ctx.status(404);
+        }
     }
 
     /**
@@ -52,7 +64,11 @@ public class IngredientController {
      * @param ctx the Javalin context containing the request path parameter for the ingredient id
      */
     public void deleteIngredient(Context ctx) {
-        
+        int id = Integer.parseInt(ctx.pathParam("id"));
+
+        ingredientService.deleteIngredient(id);
+
+        ctx.status(204);
     }
 
     /**
@@ -63,7 +79,16 @@ public class IngredientController {
      * @param ctx the Javalin context containing the request path parameter and updated ingredient data in the request body
      */
     public void updateIngredient(Context ctx) {
-       
+        int id = Integer.parseInt(ctx.pathParam("id"));
+        Ingredient updatedIngredient = ctx.bodyAsClass(Ingredient.class);
+
+        boolean updated = ingredientService.updateIngredient(id, updatedIngredient);
+
+        if (updated) {
+            ctx.status(204);
+        } else {
+            ctx.status(404);
+        }
     }
 
     /**
@@ -74,7 +99,11 @@ public class IngredientController {
      * @param ctx the Javalin context containing the ingredient data in the request body
      */
     public void createIngredient(Context ctx) {
+          Ingredient ingredient = ctx.bodyAsClass(Ingredient.class);
 
+        ingredientService.createIngredient(ingredient);
+
+        ctx.status(201);
     }
 
     /**
@@ -85,7 +114,32 @@ public class IngredientController {
      * @param ctx the Javalin context containing query parameters for pagination, sorting, and filtering
      */
     public void getIngredients(Context ctx) {
-       
+       Integer page = getParamAsClassOrElse(ctx, "page", Integer.class, null);
+        Integer size = getParamAsClassOrElse(ctx, "size", Integer.class, null);
+        String sort = getParamAsClassOrElse(ctx, "sort", String.class, null);
+        String sortBy = getParamAsClassOrElse(ctx, "sortBy", String.class, null);
+        String sortDirection = getParamAsClassOrElse(ctx, "sortDirection", String.class, null);
+        String filter = getParamAsClassOrElse(ctx, "filter", String.class, null);
+        String term = getParamAsClassOrElse(ctx, "term", String.class, null);
+        
+        // Use term if filter is not provided
+        if (filter == null && term != null) {
+            filter = term;
+        }
+
+        // If no pagination params → return all
+        if (page == null && size == null && sort == null && sortBy == null && filter == null) {
+            List<Ingredient> ingredients = (List<Ingredient>) ingredientService.getIngredients(null, null, null, null);
+            ctx.json(ingredients);
+            ctx.status(200);
+        } else {
+            // Pagination + filtering
+            String sortField = sort != null ? sort : (sortBy != null ? sortBy : "id");
+            String sortDir = sortDirection != null ? sortDirection : "asc";
+            Object result = ingredientService.searchIngredients(filter, page != null ? page : 1, size != null ? size : 10, sortField, sortDir);
+            ctx.json(result);
+            ctx.status(200);
+        }
     }
 
     /**

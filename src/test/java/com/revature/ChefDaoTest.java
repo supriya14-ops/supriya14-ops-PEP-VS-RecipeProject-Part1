@@ -87,8 +87,16 @@ public class ChefDaoTest {
         // Assert
         assertNotNull(chefs);
         assertEquals(2, chefs.size());
+        assertEquals(1, chefs.get(0).getId());
         assertEquals("chef1", chefs.get(0).getUsername());
+        assertEquals("chef1@test.com", chefs.get(0).getEmail());
+        assertEquals("pass1", chefs.get(0).getPassword());
+        assertEquals(false, chefs.get(0).isAdmin());
+        assertEquals(2, chefs.get(1).getId());
         assertEquals("chef2", chefs.get(1).getUsername());
+        assertEquals("chef2@test.com", chefs.get(1).getEmail());
+        assertEquals("pass2", chefs.get(1).getPassword());
+        assertEquals(false, chefs.get(1).isAdmin());
 
         verify(statement).executeQuery("SELECT * FROM CHEF ORDER BY id");
     }

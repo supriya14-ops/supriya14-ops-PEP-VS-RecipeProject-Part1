@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: com.revature.LoginIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 2.17 s <<< FAILURE! - in com.revature.LoginIntegrationTest
+testRegister  Time elapsed: 0.822 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: login should return a success status code.  Expected: 200, Actual: 401 ==> expected: <200> but was: <401>
+	at com.revature.LoginIntegrationTest.testRegister(LoginIntegrationTest.java:205)
+
+testSuccessfulLogin  Time elapsed: 0.363 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Login failed: Invalid username or password ==> expected: <200> but was: <401>
+	at com.revature.LoginIntegrationTest.testSuccessfulLogin(LoginIntegrationTest.java:101)
+
+testLogout  Time elapsed: 0.589 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: login should return a success status code.  Expected: 200, Actual: 401 ==> expected: <200> but was: <401>
+	at com.revature.LoginIntegrationTest.testLogout(LoginIntegrationTest.java:181)
+

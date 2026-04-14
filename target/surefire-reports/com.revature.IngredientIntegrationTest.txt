@@ -1,0 +1,39 @@
+-------------------------------------------------------------------------------
+Test set: com.revature.IngredientIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 7, Errors: 0, Skipped: 0, Time elapsed: 5.15 s <<< FAILURE! - in com.revature.IngredientIntegrationTest
+testPageIngredients  Time elapsed: 0.75 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <200> but was: <500>
+	at com.revature.IngredientIntegrationTest.lambda$testPageIngredients$7(IngredientIntegrationTest.java:93)
+	at com.revature.IngredientIntegrationTest.testPageIngredients(IngredientIntegrationTest.java:92)
+
+testGetIngredients  Time elapsed: 0.78 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <[{"id":1,"name":"carrot"},{"id":2,"name":"potato"},{"id":3,"name":"tomato"},{"id":4,"name":"lemon"},{"id":5,"name":"rice"},{"id":6,"name":"stone"}]> but was: <[]>
+	at com.revature.IngredientIntegrationTest.lambda$testGetIngredients$6(IngredientIntegrationTest.java:84)
+	at com.revature.IngredientIntegrationTest.testGetIngredients(IngredientIntegrationTest.java:82)
+
+testCreateIngredient  Time elapsed: 0.556 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <{"id":7,"name":"parsnips"}> but was: <>
+	at com.revature.IngredientIntegrationTest.lambda$testCreateIngredient$5(IngredientIntegrationTest.java:76)
+	at com.revature.IngredientIntegrationTest.testCreateIngredient(IngredientIntegrationTest.java:74)
+
+testGetIngredientsByTermSorted  Time elapsed: 0.483 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <200> but was: <500>
+	at com.revature.IngredientIntegrationTest.lambda$testGetIngredientsByTermSorted$9(IngredientIntegrationTest.java:113)
+	at com.revature.IngredientIntegrationTest.testGetIngredientsByTermSorted(IngredientIntegrationTest.java:112)
+
+testGetIngredientsByTerm  Time elapsed: 0.507 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <200> but was: <500>
+	at com.revature.IngredientIntegrationTest.lambda$testGetIngredientsByTerm$8(IngredientIntegrationTest.java:103)
+	at com.revature.IngredientIntegrationTest.testGetIngredientsByTerm(IngredientIntegrationTest.java:102)
+
+testGetIngredient  Time elapsed: 0.471 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <200> but was: <404>
+	at com.revature.IngredientIntegrationTest.lambda$testGetIngredient$0(IngredientIntegrationTest.java:38)
+	at com.revature.IngredientIntegrationTest.testGetIngredient(IngredientIntegrationTest.java:37)
+
+testUpdateIngredient  Time elapsed: 0.357 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <204> but was: <404>
+	at com.revature.IngredientIntegrationTest.lambda$testUpdateIngredient$3(IngredientIntegrationTest.java:60)
+	at com.revature.IngredientIntegrationTest.testUpdateIngredient(IngredientIntegrationTest.java:59)
+

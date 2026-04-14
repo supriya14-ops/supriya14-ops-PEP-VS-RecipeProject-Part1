@@ -1,0 +1,15 @@
+com\revature\IngredientTest.class
+com\revature\LoginIntegrationTest.class
+com\revature\IngredientServiceTest.class
+com\revature\ChefServiceTest.class
+com\revature\IngredientDaoTest.class
+com\revature\IngredientIntegrationTest.class
+com\revature\ConnectionTest.class
+com\revature\JavalinConfigTest.class
+com\revature\utils\TestingUtils.class
+com\revature\ChefDaoTest.class
+com\revature\RecipeServiceTest.class
+com\revature\RecipeIntegrationTest.class
+com\revature\RecipeControllerTest.class
+com\revature\RecipeTest.class
+com\revature\RecipeDaoTest.class

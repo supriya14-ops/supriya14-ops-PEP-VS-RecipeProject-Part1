@@ -41,9 +41,26 @@ public class AuthenticationService {
      * @return a session token if the login is successful; null otherwise
      */
     public String login(Chef chef) {
-        return null; 
+        if (chef == null || chef.getUsername() == null || chef.getPassword() == null) {
+        return null;
+    }
+Chef foundChef = null;
+    for (Chef c : chefService.searchChefs(chef.getUsername())) {
+        if (c.getUsername().equals(chef.getUsername())) {
+            foundChef = c;
+            break;
+        }
     }
 
+    // validate credentials
+    if (foundChef != null && foundChef.getPassword().equals(chef.getPassword())) {
+        String token = java.util.UUID.randomUUID().toString();
+        loggedInUsers.put(token, foundChef);
+        return token;
+    }
+
+    return null;
+}
     /**
      * TODO: Logs out a chef by removing their session token from the LoggedInUsers map.
      *
@@ -51,7 +68,9 @@ public class AuthenticationService {
      */
 
     public void logout(String token) {
-        
+        if (token != null) {
+        loggedInUsers.remove(token);
+    }
     }
 
     /**
@@ -61,7 +80,12 @@ public class AuthenticationService {
 	 * @return the registered chef object
 	 */
     public Chef registerChef(Chef chef) {
+        if (chef == null || chef.getUsername() == null || chef.getPassword() == null) {
         return null;
+    }
+
+    chefService.saveChef(chef);
+    return chef;
     }
 
     /**
@@ -71,6 +95,10 @@ public class AuthenticationService {
      * @return the Chef object associated with the session token; null if not found
      */
     public Chef getChefFromSessionToken(String token) {
-        return null;
+        return loggedInUsers.get(token);
+    }
+
+    public boolean isValidToken(String token) {
+        return token != null && loggedInUsers.containsKey(token);
     }
 }
